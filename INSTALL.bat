@@ -24,7 +24,7 @@ goto end
 
 :execute
 echo Python using '%PYTHON_CMD%'
-pip install -r requirements.txt
+%PYTHON_CMD% -m pip install -r requirements.txt
 pause
 
 :end
