@@ -4,7 +4,7 @@ from kiloex import Kiloex
 from logs import color_ml, head_text, logger
 
 with open("pk.txt", "r") as f:
-    private_keys = f.read().splitlines()
+    private_keys = [line.strip() for line in f.readlines() if line.strip()]
 
 
 async def run_wallet(private_key: str):

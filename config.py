@@ -3,7 +3,7 @@ from web3.auto import w3
 
 class Settings:
     # rpc
-    rpc: str = "https://opbnb-mainnet-rpc.bnbchain.org"
+    rpc: str = "https://opbnb-rpc.publicnode.com"
 
     position_contract_address = w3.to_checksum_address(
         "0xa02d433868c7ad58c8a2a820d6c3ff8a15536acc"
