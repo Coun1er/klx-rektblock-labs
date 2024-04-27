@@ -5,12 +5,13 @@ from web3 import AsyncHTTPProvider, AsyncWeb3
 
 from abi import ERC20_ABI
 from config import settings
+from data import NETWORKS_DATA
 from logs import logger
 
 
 class Default:
     def __init__(self, private_key: str) -> None:
-        self.w3 = AsyncWeb3(AsyncHTTPProvider(settings.rpc))
+        self.w3 = AsyncWeb3(AsyncHTTPProvider(NETWORKS_DATA[settings.network]["rpc"]))
 
         self.private_key = private_key
 

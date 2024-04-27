@@ -1,17 +1,6 @@
-from web3.auto import w3
-
-
 class Settings:
-    # rpc
-    rpc: str = "https://opbnb-rpc.publicnode.com"
-
-    position_contract_address = w3.to_checksum_address(
-        "0xa02d433868c7ad58c8a2a820d6c3ff8a15536acc"
-    )
-
-    usd_token_address = w3.to_checksum_address(
-        "0x9e5aac1ba1a2e6aed6b32689dfcf62a509ca96f3"
-    )
+    # Выбор сети в которой будем работать: opBNB, BNB, Manta
+    network = "opBNB"
 
     # Торговые пары на которых будем торговать. Если пар больше 1, то на каждый трейд пара берется рандомно.
     trading_pairs = ["ETH-USDT", "BTC-USDT"]

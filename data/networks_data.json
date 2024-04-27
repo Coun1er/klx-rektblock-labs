@@ -1,0 +1,23 @@
+{
+    "opBNB": {
+        "rpc": "https://opbnb-rpc.publicnode.com",
+        "contract_address": "0xa02d433868c7ad58c8a2a820d6c3ff8a15536acc",
+        "token_address": "0x9e5aac1ba1a2e6aed6b32689dfcf62a509ca96f3",
+        "native_name": "opBNB",
+        "value": 0.000007
+    },
+    "BNB": {
+        "rpc": "https://bsc-rpc.publicnode.com",
+        "contract_address": "0x298e94D5494E7c461a05903DcF41910e0125D019",
+        "token_address": "0x55d398326f99059ff775485246999027b3197955",
+        "native_name": "BNB",
+        "value": 0.0016
+    },
+    "Manta": {
+        "rpc": "https://manta-pacific.drpc.org",
+        "contract_address": "0xa02d433868C7Ad58C8A2A820d6C3FF8a15536ACc",
+        "token_address": "0xf417F5A458eC102B90352F697D6e2Ac3A3d2851f",
+        "native_name": "ETH",
+        "value": 0.000002
+    }
+}

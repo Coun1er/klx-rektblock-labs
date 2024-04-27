@@ -5,7 +5,7 @@ import aiohttp
 
 from abi import POSITION_ABI
 from config import settings
-from data import PRODUCT_LIST, TRADING_PAIRS
+from data import NETWORKS_DATA, PRODUCT_LIST, TRADING_PAIRS
 from default import Default
 from helper import retry
 from logs import (
@@ -67,10 +67,13 @@ class Kiloex(Default):
     async def create_position(
         self, amount_for_trading, position_type_str, product_id, first_tiker_trade
     ):
-        amount = self.w3.to_wei(0.000007, "ether")
+        amount = self.w3.to_wei(NETWORKS_DATA[settings.network]["value"], "ether")
 
         contract_instance = self.w3.eth.contract(
-            address=settings.position_contract_address, abi=self.position_abi
+            address=self.w3.to_checksum_address(
+                NETWORKS_DATA[settings.network]["contract_address"]
+            ),
+            abi=self.position_abi,
         )
 
         if position_type_str == "LONG":
@@ -104,7 +107,9 @@ class Kiloex(Default):
             "from": self.address,
             "gasPrice": await self.w3.eth.gas_price,
             "nonce": await self.w3.eth.get_transaction_count(self.address),
-            "to": settings.position_contract_address,
+            "to": self.w3.to_checksum_address(
+                NETWORKS_DATA[settings.network]["contract_address"]
+            ),
             "value": amount,
         }
 
@@ -130,10 +135,13 @@ class Kiloex(Default):
     async def close_position(
         self, amount_for_trading, position_type_str, product_id, first_tiker_trade
     ):
-        amount = self.w3.to_wei(0.000007, "ether")
+        amount = self.w3.to_wei(NETWORKS_DATA[settings.network]["value"], "ether")
 
         contract_instance = self.w3.eth.contract(
-            address=settings.position_contract_address, abi=self.position_abi
+            address=self.w3.to_checksum_address(
+                NETWORKS_DATA[settings.network]["contract_address"]
+            ),
+            abi=self.position_abi,
         )
         if position_type_str == "LONG":
             acceptable_price = (
@@ -161,7 +169,9 @@ class Kiloex(Default):
             "from": self.address,
             "gasPrice": await self.w3.eth.gas_price,
             "nonce": await self.w3.eth.get_transaction_count(self.address),
-            "to": settings.position_contract_address,
+            "to": self.w3.to_checksum_address(
+                NETWORKS_DATA[settings.network]["contract_address"]
+            ),
             "value": amount,
         }
 
@@ -184,42 +194,62 @@ class Kiloex(Default):
             logger.error(e)
 
     async def run(self):
-        balance_opBNB = self.w3.from_wei(await self.get_balance(), "ether")
+        balance_native = self.w3.from_wei(await self.get_balance(), "ether")
 
         balance_usdt_raw = await self.get_token_balance(
-            token_address=settings.usd_token_address
+            token_address=self.w3.to_checksum_address(
+                NETWORKS_DATA[settings.network]["token_address"]
+            )
         )
 
         balance_usdt = await self.token_conver_from_wei(
-            amount=balance_usdt_raw, token_address=settings.usd_token_address
+            amount=balance_usdt_raw,
+            token_address=self.w3.to_checksum_address(
+                NETWORKS_DATA[settings.network]["token_address"]
+            ),
         )
 
+        native_name = NETWORKS_DATA[settings.network]["native_name"]
+
         logger.info(
-            f"{self.address}: {color_yellow(f'{balance_opBNB} opBNB')} | {color_green(f'{balance_usdt} USDT')}"
+            f"{self.address}: {color_yellow(f'{balance_native} {native_name}')} | {color_green(f'{balance_usdt} USDT')}"
         )
 
         allowance = await self.get_allowance(
-            token_address=settings.usd_token_address,
-            spender=settings.position_contract_address,
+            token_address=self.w3.to_checksum_address(
+                NETWORKS_DATA[settings.network]["token_address"]
+            ),
+            spender=self.w3.to_checksum_address(
+                NETWORKS_DATA[settings.network]["contract_address"]
+            ),
         )
 
         if allowance < self.infinite:
             logger.info(f"{self.address}: Апрувим токен перед стартом.")
 
             await self.approve(
-                token_address=settings.usd_token_address,
-                spender=settings.position_contract_address,
+                token_address=self.w3.to_checksum_address(
+                    NETWORKS_DATA[settings.network]["token_address"]
+                ),
+                spender=self.w3.to_checksum_address(
+                    NETWORKS_DATA[settings.network]["contract_address"]
+                ),
             )
 
         volume, iter = 0, 0
 
         while True:
             balance_raw = await self.get_token_balance(
-                token_address=settings.usd_token_address
+                token_address=self.w3.to_checksum_address(
+                    NETWORKS_DATA[settings.network]["token_address"]
+                )
             )
 
             balance = await self.token_conver_from_wei(
-                amount=balance_raw, token_address=settings.usd_token_address
+                amount=balance_raw,
+                token_address=self.w3.to_checksum_address(
+                    NETWORKS_DATA[settings.network]["token_address"]
+                ),
             )
 
             if balance < settings.min_balance:
@@ -242,7 +272,9 @@ class Kiloex(Default):
             amount_for_trading = int(
                 await self.token_conver_from_wei(
                     amount=amount_for_trading_raw,
-                    token_address=settings.usd_token_address,
+                    token_address=self.w3.to_checksum_address(
+                        NETWORKS_DATA[settings.network]["token_address"]
+                    ),
                 )
             )
 
