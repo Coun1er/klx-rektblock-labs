@@ -286,6 +286,8 @@ class Kiloex(Default):
                 f"{self.address}: Открываем {color_position_type(position_type_str)} на {color_trading_pair(trading_pair)} {amount_for_trading} USD с {settings.leverage} плечëм ({amount_for_trading * settings.leverage} usd позиция)"
             )
 
+            volume += amount_for_trading * settings.leverage
+
             await self.create_position(
                 amount_for_trading=amount_for_trading,
                 position_type_str=position_type_str,
